@@ -21,7 +21,6 @@ def main():
         be.echo("bad kind,no newline", 'bad', False)
         be.echo("        normal")
         be.error("real error")
-        be.export('suppe', 'gulasch')
         print be.cmdstring()
         return
 
@@ -33,6 +32,17 @@ def main():
 
     # Print all commands, separated by semicolons
     print ';'.join(commands)
+
+class ModuleManager:
+    def __init__(self, cmd, args):
+        self.cmd = cmd
+        self.args = args
+        self.categories = []
+        self.mod_available = []
+        self.mod_loaded = []
+
+    def run(self):
+        self.parsecommand()
 
 class BashExec:
     def __init__(self):
