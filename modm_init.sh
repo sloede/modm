@@ -1,11 +1,11 @@
 #!/bin/bash
 
 ################################################################################
-# AIAMODULE
+# MODM - Modules iMproved
 ################################################################################
 
-# Set path to aiamodule.py
-AIAMODULE_PY=/home/mic/Code/aiamodule/aiamodule.py
+# Set path to modm.py
+MODM_PY=/home/mic/Code/modm/modm.py
 
 ################################################################################
 # NO NEED TO EDIT ANYTHING BEYOND THIS POINT
@@ -17,9 +17,9 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
   exit 2
 fi
 
-# Define function to call AIAMODULE and make it available to subshells
-aiamodule() {
-  eval `$AIAMODULE_PY "$@"`
+# Define function to call MODM and make it available to subshells
+modm() {
+  eval `$MODM_PY "$@"`
 }
-export -f aiamodule
-export AIAMODULE_PY
+export -f modm
+export MODM_PY
