@@ -24,25 +24,18 @@ def main():
         print be.cmdstring()
         return
 
-    # Init empty command list
-    commands = []
-
-    test = "export ttt=wololo"
-    commands.append(test)
-
-    # Print all commands, separated by semicolons
-    print ';'.join(commands)
-
-class ModuleManager:
-    def __init__(self, cmd, args):
-        self.cmd = cmd
-        self.args = args
+class Modm:
+    def __init__(self, *modules_dirs):
+        self.modules_dirs = modules_dirs
+        self.cmd = None
+        self.args = []
+        self.be = BashExec()
         self.categories = []
         self.mod_available = []
         self.mod_loaded = []
 
     def run(self):
-        self.parsecommand()
+        self.parseargs()
 
 class BashExec:
     def __init__(self):
