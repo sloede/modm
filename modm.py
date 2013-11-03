@@ -46,6 +46,30 @@ class Modm:
         self.cmd = self.argv[1] if len(self.argv) > 1 else None
         self.args = self.argv[2:] if len(self.argv) > 2 else []
 
+class Env:
+    exepath_var = 'PATH'
+    libpath_var = 'LD_LIBRARY_PATH'
+    path_sep = ':'
+
+    def __init__(self):
+        # Load PATH to exepath
+        self.exepath = os.environ[self.exepath_var].split(self.path_sep) if (
+        os.environ.has_key(exepath_var) else [])
+        if self.exepath == ['']:
+            self.exepath = []
+
+        # Load LD_LIBRARY_PATH to libpath
+        self.libpath = os.environ[self.libpath_var].split(self.path_sep) if (
+        os.environ.has_key(libpath_var) else [])
+        if self.libpath == ['']:
+            self.libpath = []
+
+    def get_exepath_str(self):
+        return Env.path_sep.join(self.exepath)
+
+    def get_libpath_str(self):
+        return Env.path_sep.join(self.libpath)
+
 class BashEval:
     def __init__(self):
         self.cmds = []
