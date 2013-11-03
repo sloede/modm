@@ -72,13 +72,13 @@ class Env:
 
     def __init__(self):
         # Load PATH to exepath
-        self.exepath = os.environ[self.exepath_var].split(self.path_sep) if (
+        self.exepath = (os.environ[self.exepath_var].split(self.path_sep) if
         os.environ.has_key(exepath_var) else [])
         if self.exepath == ['']:
             self.exepath = []
 
         # Load LD_LIBRARY_PATH to libpath
-        self.libpath = os.environ[self.libpath_var].split(self.path_sep) if (
+        self.libpath = (os.environ[self.libpath_var].split(self.path_sep) if
         os.environ.has_key(libpath_var) else [])
         if self.libpath == ['']:
             self.libpath = []
