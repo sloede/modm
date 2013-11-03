@@ -11,6 +11,7 @@ admin_email = 'root@localhost'
 
 import os
 import sys
+import textwrap as tw
 
 def main():
     m = Modm(sys.argv, modules_path_var, modules_loaded_var, admin_email)
@@ -90,6 +91,8 @@ class Env:
         return Env.path_sep.join(self.libpath)
 
 class BashEval:
+    textwidth = 80
+
     def __init__(self):
         self.cmds = []
 
@@ -123,6 +126,21 @@ class BashEval:
             suffix = r'\033[0m'
 
         return '{p}{m}{s}'.format(p=prefix, m=message, s=suffix)
+
+    def reformat(self, message, width=None, keep_indent=True):
+        if width is None:
+            width = BashEval.textwidth
+
+        lines = []
+        for line in message.splitlines():
+            if keep_indent:
+                indent = (len(line) - len(line.lstrip(' '))) * ' '
+            else:
+                indent = ''
+
+            lines.append(tw.fill(line, width=width, subsequent_indent=indent))
+
+        return ''.join(lines)
 
     def echo(self, message, kind='normal', newline=True):
         nl = r'\n' if newline else ''
