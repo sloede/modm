@@ -1,53 +1,67 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 
-# Set directory with module files
-modules_dir = '/home/mic/Code/aiamodule/modules'
+# Set name of environment variable with locations of modules
+modules_path_var = 'MODM_MODULES_PATH'
+
+# Set name of environment variable with names of loaded modules
+modules_loaded_var = 'MODM_LOADED_MODULES'
+
+# Set email address to show in error messages
+admin_email = 'root@localhost'
 
 import os
 import sys
 
 def main():
-    # Parse arguments
-    cmd = sys.argv[1] if len(sys.argv) > 1 else 'help'
-    args = sys.argv[2:] if len(sys.argv) > 2 else []
-
-    be = BashExec()
-    commands_available = ['avail', 'help', 'list', 'load', 'unload']
-    if cmd not in commands_available:
-        be.echo("normal message")
-        be.echo("info message", 'info')
-        be.echo("success message", 'success')
-        be.echo("error message", 'error')
-        be.echo("bad kind,no newline", 'bad', False)
-        be.echo("        normal")
-        be.error("real error")
-        print be.cmdstring()
-        return
+    m = Modm(sys.argv, modules_path_var, modules_loaded_var, admin_email)
+    m.run()
 
 class Modm:
-    def __init__(self, *modules_dirs):
-        self.modules_dirs = modules_dirs
+    def __init__(self, argv, modules_path_var='MODM_MODULES_PATH',
+            modules_loaded_var='MODM_LOADED_MODULES',
+            admin_email='root@localhost'):
+        self.argv = argv
+        self.modules_path_var = modules_path_var
+        self.modules_loaded_var = modules_loaded_var
+        self.admin_email = admin_email
         self.cmd = None
         self.args = []
-        self.be = BashExec()
-        self.categories = []
-        self.mod_available = []
-        self.mod_loaded = []
+        self.be = BashEval()
 
     def run(self):
-        self.parseargs()
+        try:
+            self.rununsafe()
+        except Exception as e:
+            self.be.clear()
+            self.be.error("An unknown error has occurred.")
+            raise
+        finally:
+            print self.be.cmdstring()
 
-class BashExec:
+    def rununsafe(self):
+        self.init_argv()
+        self.be.echo("Hello, World!", kind='info')
+
+    def init_argv(self):
+        self.cmd = self.argv[1] if len(self.argv) > 1 else None
+        self.args = self.argv[2:] if len(self.argv) > 2 else []
+
+class BashEval:
     def __init__(self):
+        self.cmds = []
+
+    def clear(self):
         self.cmds = []
 
     def execute(self, cmd):
         self.cmds.append(str(cmd))
 
     def cmdstring(self):
-        return ';'.join(self.cmds)
+        string = ';'.join(self.cmds)
+        self.clear()
+        return string
 
-    def echo(self, message, kind='normal', newline=True):
+    def highlight(self, message, kind='normal'):
         kinds = ['normal', 'info', 'success', 'error']
         if kind not in kinds:
             kind = 'normal'
@@ -64,9 +78,13 @@ class BashExec:
         elif kind == 'error':
             prefix = r'\033[31m'
             suffix = r'\033[0m'
+
+        return '{p}{m}{s}'.format(p=prefix, m=message, s=suffix)
+
+    def echo(self, message, kind='normal', newline=True):
         nl = r'\n' if newline else ''
-        self.execute('printf "{p}{m}{s}{n}"'.format(
-                p=prefix, m=message, s=suffix, n=nl))
+        self.execute('printf "{m}{n}"'.format(
+                m=self.highlight(message, kind=kind), n=nl))
 
     def error(self, message, newline=True):
         self.echo("*** ERROR: " + message, kind='error', newline=newline)
