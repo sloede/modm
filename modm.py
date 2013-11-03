@@ -34,13 +34,32 @@ class Modm:
         except Exception as e:
             self.be.clear()
             self.be.error("An unknown error has occurred.")
+            self.be.error("Please send an email with the used command and "
+                    + "the error message above to '{e}'."
+                    .format(e=self.admin_email))
             raise
         finally:
             print self.be.cmdstring()
 
     def rununsafe(self):
         self.init_argv()
-        self.be.echo("Hello, World!", kind='info')
+
+        if self.cmd in ['help', '-h', '--help']:
+            self.cmd_help()
+        elif self.cmd in ['avail']:
+            self.cmd_avail()
+        elif self.cmd in ['list', 'loaded']:
+            self.cmd_list()
+        elif self.cmd in ['load']:
+            self.cmd_load()
+        elif self.cmd in ['unload']:
+            self.cmd_unload()
+        elif not self.cmd:
+            self.be.error("No command given." +
+                    "See 'modm help' for usage information.")
+        else:
+            self.be.error("Command '{c}' not recognized. ".format(c=self.cmd) +
+                    "See 'modm help' for usage information.")
 
     def init_argv(self):
         self.cmd = self.argv[1] if len(self.argv) > 1 else None
