@@ -19,7 +19,7 @@ fi
 
 # Define function to call MODM and make it available to subshells
 modm() {
-  eval `$MODM_PY "$@"`
+  eval "`$MODM_PY \"$@\"`"
 }
 export -f modm
 export MODM_PY
