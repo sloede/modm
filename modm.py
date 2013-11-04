@@ -34,7 +34,7 @@ class Modm:
             self.rununsafe()
         except Exception as e:
             self.be.clear()
-            self.be.error("An unknown error has occurred.")
+            self.be.error("An unknown error occurred.")
             self.be.error("Please send an email with the used command and "
                     + "the error message above to '{e}'."
                     .format(e=self.admin_email))
@@ -92,6 +92,7 @@ class Env:
 
 class BashEval:
     textwidth = 80
+    replacements = {'$': '\$', '`': '\`', '!': '\!', '\n': '\\n', '"': '\\"'}
 
     def __init__(self):
         self.cmds = []
@@ -127,7 +128,7 @@ class BashEval:
 
         return '{p}{m}{s}'.format(p=prefix, m=message, s=suffix)
 
-    def reformat(self, message, width=None, keep_indent=True):
+    def wrap(self, message, width=None, keep_indent=True):
         if width is None:
             width = BashEval.textwidth
 
@@ -142,13 +143,21 @@ class BashEval:
 
         return ''.join(lines)
 
+    def quote(self, s):
+        return reduce(lambda acc, kv: acc.replace(*kv),
+                BashEval.replacements.iteritems(), s)
+
     def echo(self, message, kind='normal', newline=True):
         nl = r'\n' if newline else ''
         self.execute('printf "{m}{n}"'.format(
-                m=self.highlight(message, kind=kind), n=nl))
+                m=self.highlight(self.quote(self.wrap(message)), kind=kind), n=nl))
 
     def error(self, message, newline=True):
-        self.echo("*** ERROR: " + message, kind='error', newline=newline)
+        prefix = "*** ERROR: "
+        width = BashEval.textwidth - len(prefix)
+
+        for line in self.wrap(message, width=width).splitlines():
+            self.echo(prefix + line, kind='error', newline=newline)
 
     def export(self, key, value):
         self.execute("export {k}={v}".format(k=key, v=value))
