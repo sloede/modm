@@ -53,6 +53,9 @@ def main():
     m.run()
 
 class Modm:
+    help_file_suffix = '.txt'
+    help_file_dir = 'doc'
+
     def __init__(self, argv, modules_path_var='MODM_MODULES_PATH',
             modules_loaded_var='MODM_LOADED_MODULES',
             admin_email='root@localhost', version='<unknown>'):
@@ -74,33 +77,37 @@ class Modm:
             self.rununsafe()
         except Exception as e:
             self.be.clear()
-            self.be.error("An unknown error occurred.")
-            self.be.error("Please send an email with the used command and "
-                    + "the error message above to '{e}'."
-                    .format(e=self.admin_email))
+            self.be.error("An unknown error occurred.", internal=True)
+            self.be.error("Please send an email with the command you used and "
+                    + "the error message printed above to '{e}'."
+                    .format(e=self.admin_email), internal=True)
             raise
         finally:
-            print self.be.cmdstring()
+            sys.stdout.write(self.be.cmdstring())
 
     def rununsafe(self):
         self.init_argv()
 
-        if self.cmd in ['help', '-h', '--help']:
+        if self.cmd in ['help', '--help']:
             self.cmd_help()
+        elif self.cmd in ['--version']:
+            self.cmd_version()
         elif self.cmd in ['avail']:
             self.cmd_avail()
-        elif self.cmd in ['list', 'loaded']:
+        elif self.cmd in ['list']:
             self.cmd_list()
         elif self.cmd in ['load']:
             self.cmd_load()
         elif self.cmd in ['unload']:
             self.cmd_unload()
         elif not self.cmd:
-            self.be.error("No command given." +
-                    "See 'modm help' for usage information.")
+            self.be.error("No command given.")
+            self.print_help('usage')
         else:
-            self.be.error("Command '{c}' not recognized. ".format(c=self.cmd) +
-                    "See 'modm help' for usage information.")
+            arg_type = "Option" if self.cmd[0] == '-' else "Command"
+            self.be.error("{t} '{c}' not recognized."
+                    .format(t=arg_type, c=self.cmd))
+            self.print_help('usage')
 
     def init_argv(self):
         self.cmd = self.argv[1] if len(self.argv) > 1 else None
@@ -139,6 +146,8 @@ class Modm:
             self.be.error("Unknown help topic '{t}'.".format(t=topic))
             self.be.error("See 'modm help help' for a list of help topics.")
 
+    def cmd_version(self):
+        self.be.echo("modm version {v}".format(v=self.version))
 
 
 # Run this script only if it is called directly
