@@ -17,12 +17,14 @@ Features
 
 * Completely written in Python
 * Installation-free
+* Built-in documentation for commands
 * Nothing else :(
 
 Planned (intermediate future):
 
 * Set `PATH` and `LD_LIBRARY_PATH` variables
 * Nicely formatted and *colorized* output
+* Built-in documentation for modules
 
 
 Planned (in a land far, far away):
@@ -52,7 +54,31 @@ Set the correct path to your `modm.py` file and your default modules path. Users
 can override the default path or add their own modules by *prepending* to the
 path, just like it works with the Bash `PATH` variable.
 
+You need to do this only once per installation.
+
+### .bashrc/.bash\_profile/.profile
+In one of the Bash configuration files that are sourced at startup/login,
+`modm-init.sh` must be sourced, e.g. like so:
+
+    source path/to/modm/installation/modm-init.sh
+
+This makes the settings in the file as well as the `modm` command available.
+
+You need to do this for each users that wishes to use `modm`. Alternatively, if
+you have access to it, you could also put this in `/etc/profile` so that it is
+sourced for all users.
+
 ### modm.py
 You may set an admin email here (default: root@localhost). This email address
 will only be displayed in case of internal errors, so that users know who to
 report errors to.
+
+You need to do this only once per installation.
+
+
+Usage
+-----
+
+After installation, make sure that the `modm-init.sh` is sourced properly, e.g.
+by logging out and in again. Then just execute `modm` in the shell and let the
+built-in documentation take it from there.
