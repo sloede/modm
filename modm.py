@@ -18,24 +18,6 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-# Set global configuration values for Modm
-
-# Set email address to show in error messages
-admin_email = 'root@localhost'
-
-# Set name of environment variable with locations of modules
-# Note: If you change this value, you also need to change the environment
-#       variable in modm-init.sh.
-modules_path_var = 'MODM_MODULES_PATH'
-
-# Set name of environment variable with names of loaded modules
-modules_loaded_var = 'MODM_LOADED_MODULES'
-
-
-################################################################################
-# NO NEED TO EDIT ANYTHING BEYOND THIS POINT
-################################################################################
-
 # Current Modm version
 modm_version = 'v0.1+x'
 

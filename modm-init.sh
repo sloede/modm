@@ -18,13 +18,16 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-# Set global configuration values for Modm
+# Set global configuration values for Modm (all variables will be export'd)
 
 # Set full path to modm.py
 MODM_PY=/home/mic/Code/modm/modm.py
 
-# Set path to module file directory(s) (will be exported)
+# Set path to module file directory(s)
 MODM_MODULES_PATH="/home/mic/.pool/modm-modules"
+
+# Set email address to show for internal error messages
+MODM_ADMIN_EMAIL="root@localhost"
 
 
 ################################################################################
@@ -41,8 +44,9 @@ fi
 modm() {
   eval "`$MODM_PY $*`"
 }
+
+# Export functions and Modm configuration values
 export -f modm
 export MODM_PY
-
-# Export modules path
 export MODM_MODULES_PATH
+export MODM_ADMIN_EMAIL
