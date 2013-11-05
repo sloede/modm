@@ -17,34 +17,57 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+
+# Set global configuration values for Modm
+
+# Set email address to show in error messages
+admin_email = 'root@localhost'
+
 # Set name of environment variable with locations of modules
+# Note: If you change this value, you also need to change the environment
+#       variable in modm-init.sh.
 modules_path_var = 'MODM_MODULES_PATH'
 
 # Set name of environment variable with names of loaded modules
 modules_loaded_var = 'MODM_LOADED_MODULES'
 
-# Set email address to show in error messages
-admin_email = 'root@localhost'
 
-import os
+################################################################################
+# NO NEED TO EDIT ANYTHING BEYOND THIS POINT
+################################################################################
+
+# Current Modm version
+modm_version = 'v0.1+x'
+
+# System imports
 import sys
-import textwrap as tw
+import os
+
+# Project imports
+from basheval import BashEval
+from env import Env
 
 def main():
-    m = Modm(sys.argv, modules_path_var, modules_loaded_var, admin_email)
+    m = Modm(sys.argv, modules_path_var, modules_loaded_var,
+            admin_email, modm_version)
     m.run()
 
 class Modm:
     def __init__(self, argv, modules_path_var='MODM_MODULES_PATH',
             modules_loaded_var='MODM_LOADED_MODULES',
-            admin_email='root@localhost'):
+            admin_email='root@localhost', version='<unknown>'):
+        # Save arguments
         self.argv = argv
         self.modules_path_var = modules_path_var
         self.modules_loaded_var = modules_loaded_var
         self.admin_email = admin_email
+        self.version = version
         self.cmd = None
         self.args = []
+
+        # Init other members
         self.be = BashEval()
+        self.env = Env()
 
     def run(self):
         try:
@@ -83,101 +106,38 @@ class Modm:
         self.cmd = self.argv[1] if len(self.argv) > 1 else None
         self.args = self.argv[2:] if len(self.argv) > 2 else []
 
-class Env:
-    exepath_var = 'PATH'
-    libpath_var = 'LD_LIBRARY_PATH'
-    path_sep = ':'
+    def print_help(self, topic):
+        help_file = os.path.join(
+                os.path.dirname(os.path.realpath(__file__)),
+                Modm.help_file_dir, topic + Modm.help_file_suffix)
 
-    def __init__(self):
-        # Load PATH to exepath
-        self.exepath = (os.environ[self.exepath_var].split(self.path_sep) if
-        os.environ.has_key(exepath_var) else [])
-        if self.exepath == ['']:
-            self.exepath = []
+        if os.path.isfile(help_file):
+            with open(help_file, 'r') as f:
+                self.be.echo(f.read(), newline=False)
+        else:
+            self.be.error("Help file '{f}' not found.".format(f=help_file),
+                    internal=True)
+            self.be.error("Please send an email with the command you used and "
+                    + "the error message printed above to '{e}'."
+                    .format(e=self.admin_email), internal=True)
 
-        # Load LD_LIBRARY_PATH to libpath
-        self.libpath = (os.environ[self.libpath_var].split(self.path_sep) if
-        os.environ.has_key(libpath_var) else [])
-        if self.libpath == ['']:
-            self.libpath = []
-
-    def get_exepath_str(self):
-        return Env.path_sep.join(self.exepath)
-
-    def get_libpath_str(self):
-        return Env.path_sep.join(self.libpath)
-
-class BashEval:
-    textwidth = 80
-    replacements = {'$': '\$', '`': '\`', '!': '\!', '\n': '\\n', '"': '\\"'}
-
-    def __init__(self):
-        self.cmds = []
-
-    def clear(self):
-        self.cmds = []
-
-    def execute(self, cmd):
-        self.cmds.append(str(cmd))
-
-    def cmdstring(self):
-        string = ';'.join(self.cmds)
-        self.clear()
-        return string
-
-    def highlight(self, message, kind='normal'):
-        kinds = ['normal', 'info', 'success', 'error']
-        if kind not in kinds:
-            kind = 'normal'
-        prefix = ''
-        suffix = ''
-        if kind == 'normal':
-            pass
-        elif kind == 'info':
-            prefix = r'\033[34m'
-            suffix = r'\033[0m'
-        elif kind == 'success':
-            prefix = r'\033[32m'
-            suffix = r'\033[0m'
-        elif kind == 'error':
-            prefix = r'\033[31m'
-            suffix = r'\033[0m'
-
-        return '{p}{m}{s}'.format(p=prefix, m=message, s=suffix)
-
-    def wrap(self, message, width=None, keep_indent=True):
-        if width is None:
-            width = BashEval.textwidth
-
-        lines = []
-        for line in message.splitlines():
-            if keep_indent:
-                indent = (len(line) - len(line.lstrip(' '))) * ' '
-            else:
-                indent = ''
-
-            lines.append(tw.fill(line, width=width, subsequent_indent=indent))
-
-        return ''.join(lines)
-
-    def quote(self, s):
-        return reduce(lambda acc, kv: acc.replace(*kv),
-                BashEval.replacements.iteritems(), s)
-
-    def echo(self, message, kind='normal', newline=True):
-        nl = r'\n' if newline else ''
-        self.execute('printf "{m}{n}"'.format(
-                m=self.highlight(self.quote(self.wrap(message)), kind=kind), n=nl))
-
-    def error(self, message, newline=True):
-        prefix = "*** ERROR: "
-        width = BashEval.textwidth - len(prefix)
-
-        for line in self.wrap(message, width=width).splitlines():
-            self.echo(prefix + line, kind='error', newline=newline)
-
-    def export(self, key, value):
-        self.execute("export {k}={v}".format(k=key, v=value))
+    def cmd_help(self):
+        topic = self.args[0] if len(self.args) > 0 else None
+        if self.cmd in ['--help'] or topic is None:
+            self.print_help('usage')
+        elif topic in ['help']:
+            self.print_help('commands/help')
+        elif topic in ['avail']:
+            self.print_help('commands/avail')
+        elif topic in ['list']:
+            self.print_help('commands/list')
+        elif topic in ['load']:
+            self.print_help('commands/load')
+        elif topic in ['unload']:
+            self.print_help('commands/unload')
+        else:
+            self.be.error("Unknown help topic '{t}'.".format(t=topic))
+            self.be.error("See 'modm help help' for a list of help topics.")
 
 
 
