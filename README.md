@@ -15,30 +15,32 @@ Although the name implies that this program can do everything that the original
 Features
 --------
 
-* Completely written in Python
-* Installation-free
-* Built-in documentation for commands
-* Nothing else :(
+*   Completely written in Python
+*   Installation-free
+*   Built-in documentation for commands
+*   Nothing else :(
 
 Planned (intermediate future):
 
-* Set `PATH` and `LD_LIBRARY_PATH` variables
-* Nicely formatted and *colorized* output
-* Built-in documentation for modules
+*   Set `PATH` and `LD_LIBRARY_PATH` variables
+*   Nicely formatted and *colorized* output
+*   Built-in documentation for modules
 
 
 Planned (in a land far, far away):
 
-* Support other shells than `bash`
-* Support a richer modulefile syntax
+*   Support other shells than `bash`
+*   Support a richer modulefile syntax
 
 
 Requirements
 ------------
 
-* Linux or other Unix-like OS
-* Python (>= 2.6)
-* Bash (>= 4.1)
+*   Python (>= 2.6)
+*   Bash (>= 4.1)
+*   any Unix-like OS that
+    * uses the `PATH` and `LD_LIBRARY_PATH` variables
+    * uses `\n` as the newline separator
 
 
 Installation
@@ -47,33 +49,29 @@ Installation
 Wait a minute! *Installation-free* it says up there! What the hell?
 
 Well, the things you have to do are so minuscule, it is ridiculous. You only
-need to change two files to adapt them to your needs:
+need to edit one file to adapt Modm to your needs:
 
 ### modm-init.sh
 Set the correct path to your `modm.py` file and your default modules path. Users
 can override the default path or add their own modules by *prepending* to the
-path, just like it works with the Bash `PATH` variable.
+path, just like it works with the Bash `PATH` variable. You can also set an
+admin email variable so that users know who to ask if they encounter internal
+errors (oops...).
 
 You need to do this only once per installation.
 
 ### .bashrc/.bash\_profile/.profile
 In one of the Bash configuration files that are sourced at startup/login,
-`modm-init.sh` must be sourced, e.g. like so:
+`modm-init.sh` must be sourced, i.e. like so:
 
     source path/to/modm/installation/modm-init.sh
 
-This makes the settings in the file as well as the `modm` command available.
+This makes the `modm` command available in the shell.
 
 You need to do this for each users that wishes to use `modm`. Alternatively, if
 you have access to it, you could also put this in `/etc/profile` so that it is
-sourced for all users.
-
-### modm.py
-You may set an admin email here (default: root@localhost). This email address
-will only be displayed in case of internal errors, so that users know who to
-report errors to.
-
-You need to do this only once per installation.
+sourced for all users. And don't worry - sourcing `modm-init.sh` multiple times
+does not create any problems.
 
 
 Usage
