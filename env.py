@@ -23,23 +23,23 @@ import os
 class Env:
     exepath_var = 'PATH'
     libpath_var = 'LD_LIBRARY_PATH'
-    path_sep = ':'
 
-    def __init__(self):
-        # Load PATH to exepath
-        self.exepath = (os.environ[self.exepath_var].split(self.path_sep) if
-                os.environ.has_key(self.exepath_var) else [])
-        if self.exepath == ['']:
-            self.exepath = []
+    def __init__(self, modpath_var='MODM_MODULES_PATH',
+            modloaded_var='MODM_LOADED_MODULES'):
+        self.exepath = self.load_path_var(self.exepath_var)
+        self.libpath = self.load_path_var(self.libpath_var)
+        self.modpath = self.load_path_var(modpath_var)
+        self.modloaded = self.load_path_var(modloaded_var)
 
-        # Load LD_LIBRARY_PATH to libpath
-        self.libpath = (os.environ[self.libpath_var].split(self.path_sep) if
-                os.environ.has_key(self.libpath_var) else [])
-        if self.libpath == ['']:
-            self.libpath = []
+    def load_path_var(self, variable):
+        path = self.load_text_var(variable)
+        return path.split(os.path.pathsep) if path else []
+
+    def load_text_var(self, variable):
+        return os.environ[variable] if os.environ.has_key(variable) else None
 
     def get_exepath_str(self):
-        return Env.path_sep.join(self.exepath)
+        return os.path.pathsep.join(self.exepath)
 
     def get_libpath_str(self):
-        return Env.path_sep.join(self.libpath)
+        return os.path.pathsep.join(self.libpath)
