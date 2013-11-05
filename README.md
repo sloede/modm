@@ -34,5 +34,25 @@ Planned (in a land far, far away):
 Requirements
 ------------
 
+* Linux or other Unix-like OS
 * Python (>= 2.6)
 * Bash (>= 4.1)
+
+
+Installation
+------------
+
+Wait a minute! *Installation-free* it says up there! What the hell?
+
+Well, the things you have to do are so minuscule, it is ridiculous. You only
+need to change two files to adapt them to your needs:
+
+### modm-init.sh
+Set the correct path to your `modm.py` file and your default modules path. Users
+can override the default path or add their own modules by *prepending* to the
+path, just like it works with the Bash `PATH` variable.
+
+### modm.py
+You may set an admin email here (default: root@localhost). This email address
+will only be displayed in case of internal errors, so that users know who to
+report errors to.

@@ -1,0 +1,10 @@
+usage: modm [--version] [--help] <command> [<args>]
+
+Available commands:
+   avail         Show all available modules.
+   help          Show this help or information on other commands.
+   list          List all currently loaded modules.
+   load          Load modules.
+   unload        Unload modules.
+
+See 'modm help <command>' for more information on a specific command.
