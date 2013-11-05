@@ -1,0 +1,9 @@
+unload: Unload on or more modules.
+usage: unload <module> [<module>...]
+
+  Unloads the configuration for one or more modules. You can use either the
+  short name or the qualified name for a module. If the qualified name is
+  provided, it must match the loaded version.
+
+  If you provide more than one <module> argument, all modules are unloaded
+  individually in the order in which they appeared.

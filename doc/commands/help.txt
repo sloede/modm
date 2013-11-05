@@ -1,0 +1,16 @@
+help: Show help on Modm usage, Modm commands or available modules.
+usage: help [<command/module>]
+
+  The help command displays information on various aspects of Modm. If invoked
+  without arguments, general usage information is shown. You can also specify
+  one additional arguments (more arguments are silently ignored), which can be
+  either a command or a module name.
+
+  If a <command> is specified, the built-in help for this command will be shown.
+
+  If a <module> is specified, the help text provided by the module will be
+  shown. You may either specify the short name or the qualified name for a
+  module. In case you have a module with the same name as one of the built-in
+  Modm commands, use the qualified name or add a path separator character to the
+  short name (on *nix-like systems it is '/', on Windows it is '\') in order to
+  indicate that you are looking for the module and not the command help.

@@ -1,0 +1,15 @@
+load: Load one or more modules.
+usage: load <module> [<module>...]
+
+  Loads the configuration for one or more modules. You can use either the short
+  name or the qualified name for a module. If the short name is provided, the
+  default version is used if available, otherwise the module with the highest
+  version number is used.
+
+  If you provide more than one <module> argument, all modules are loaded
+  individually in the order in which they appeared. If one of the module fails
+  to load, it will not affect the others (unless they are dependent on the
+  failed module). If a later module may replace an earlier one, it will do so.
+  This is especially true for different versions of the same module: by design,
+  only one version of a module can only be ever active. If an already loaded
+  module is loaded again, it will be ignored.

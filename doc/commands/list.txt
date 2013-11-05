@@ -1,0 +1,7 @@
+list: List all currently loaded modules.
+usage: list [<module>...]
+
+  Display all modules that are currently loaded.
+
+  If one or more arguments are provided, only modules matching one of the
+  <module> arguments are shown.

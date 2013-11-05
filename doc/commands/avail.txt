@@ -1,0 +1,9 @@
+avail: Show all modules that are currently available.
+usage: avail [<module>...]
+
+  List all modules that are currently available, including those that are
+  already loaded. For each module, all versions that were found are displayed.
+  If one module version is currently loaded, it is indicated by an asterisk.
+
+  If one or more arguments are provided, only modules matching one of the
+  <module> arguments are shown.
