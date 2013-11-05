@@ -18,8 +18,14 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
+# Set global configuration values for Modm
+
 # Set full path to modm.py
 MODM_PY=/home/mic/Code/modm/modm.py
+
+# Set path to module file directory(s) (will be exported)
+MODM_MODULES_PATH="/home/mic/.pool/modm-modules"
+
 
 ################################################################################
 # NO NEED TO EDIT ANYTHING BEYOND THIS POINT
@@ -33,7 +39,10 @@ fi
 
 # Define function to call MODM and make it available to subshells
 modm() {
-  eval "`$MODM_PY \"$@\"`"
+  eval "`$MODM_PY $*`"
 }
 export -f modm
 export MODM_PY
+
+# Export modules path
+export MODM_MODULES_PATH
