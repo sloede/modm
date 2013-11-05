@@ -88,7 +88,7 @@ class BashEval:
             m=self.highlight(self.quote(self.wrap(message, dedent=dedent)), kind=kind), n=nl))
 
     def error(self, message, newline=True, internal=False):
-        prefix = "*** ERROR: " if not internal else "*** INTERNAL ERROR: "
+        prefix = "modm: Error: " if not internal else "modm: Error: "
         width = BashEval.textwidth - len(prefix)
 
         for line in self.wrap(message, width=width).splitlines():
