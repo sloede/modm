@@ -25,3 +25,4 @@ class Module:
         self.loaded = None
         self.default = None
         self.help_file = None
+        self.category = None
