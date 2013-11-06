@@ -19,7 +19,7 @@
 
 
 # Current Modm version
-modm_version = 'v0.1+x'
+__version__ = '0.1+x'
 
 # System imports
 import sys
@@ -29,9 +29,10 @@ import os
 from basheval import BashEval
 from env import Env
 from module import Module
+from natsort import natsorted
 
 def main():
-    Modm(sys.argv, modm_version).run()
+    Modm(sys.argv).run()
 
 class Modm:
     help_file_suffix = '.txt'
@@ -43,10 +44,9 @@ class Modm:
     admin_email_var = 'MODM_ADMIN_EMAIL'
     admin_default_email = 'root@localhost'
 
-    def __init__(self, argv, version='<unknown>'):
+    def __init__(self, argv=['modm.py']):
         # Save arguments
         self.argv = argv
-        self.version = version
 
         # Init other members
         self.be = BashEval()
@@ -113,58 +113,76 @@ class Modm:
             self.is_init_env = True
 
     def init_modules(self):
-        self.init_env()
+        if not self.is_init_modules:
+            self.init_env()
 
-        # Iterate over directories containing the modules
-        for modules_directory in self.env.modpath:
-            # Iterate over module folders 
-            for name in [d for d in os.listdir(modules_directory) if
-                    os.path.isdir(os.path.join(modules_directory, d))]:
-                # Get index
-                index = self.find_module(name)
-                if index == None:
-                    self.modules.append(Module())
-                    index = len(self.modules) - 1
-                # Set name
-                if self.modules[index].name is None:
-                    self.modules[index].name = name
-                # Set versions
-                modpath = os.path.join(modules_directory, name)
-                for modfile in [os.path.join(modpath, f) for f in
-                        os.listdir(modpath) if
-                        os.path.isfile(os.path.join(modpath, f))]:
-                    if os.path.basename(modfile) == self.module_default_file:
-                        # Set default version
-                        if self.modules[index].default is None:
-                            defaultversion = ''
-                            with open(versionfile, 'r') as f:
-                                defaultversion = f.read().strip()
-                            defaultversionfile = os.path.join(modpath,
-                                    defaultversion)
-                            if os.path.isfile(defaultversionfile):
-                                self.modules[index].default = defaultversionfile
-                    elif os.path.basename(modfile) == self.module_help_file:
-                        # Set help file
-                        if self.modules[index].help_file is None:
-                            self.modules[index].help_file = (
-                                os.path.join(modpath, self.module_help_file))
-                    else:
-                        # Add version file
-                        if os.path.basename(modfile) not in [os.path.basename(v)
-                                for v in self.modules[index].versions]:
-                            self.modules[index].versions.append(modfile)
+            # Iterate over directories containing the modules
+            for modules_directory in self.env.modpath:
+                # Iterate over module folders
+                for name in [d for d in os.listdir(modules_directory) if
+                        os.path.isdir(os.path.join(modules_directory, d))]:
+                    # Get index
+                    index = self.find_module(name)
+                    if index == None:
+                        self.modules.append(Module())
+                        index = len(self.modules) - 1
+                    # Set name
+                    if self.modules[index].name is None:
+                        self.modules[index].name = name
+                    # Set versions
+                    modpath = os.path.join(modules_directory, name)
+                    for modfile in [os.path.join(modpath, f) for f in
+                            os.listdir(modpath) if
+                            os.path.isfile(os.path.join(modpath, f))]:
+                        modversion = os.path.basename(modfile)
+                        if modversion == self.module_default_file:
+                            # Set default version
+                            if self.modules[index].default is None:
+                                defaultversion = ''
+                                with open(modfile, 'r') as f:
+                                    defaultversion = f.read().strip()
+                                defaultversionfile = os.path.join(modpath,
+                                        defaultversion)
+                                if os.path.isfile(defaultversionfile):
+                                    self.modules[index].default = (
+                                            defaultversionfile)
+                        elif modversion == self.module_help_file:
+                            # Set help file
+                            if self.modules[index].help_file is None:
+                                self.modules[index].help_file = (
+                                        os.path.join(modpath,
+                                        self.module_help_file))
+                        else:
+                            # Add version file
+                            if modversion not in [
+                                    os.path.basename(v)
+                                    for v in self.modules[index].versions]:
+                                self.modules[index].versions.append(modfile)
+                            # Set loaded
+                            if modfile in self.env.modloaded:
+                                self.modules[index].loaded = modfile
 
-        # Sort modules
-        self.modules = sorted(self.modules, cmp=lambda x,y: cmp(x.name, y.name))
-        # Sort versions
-        for i in range(len(self.modules)):
-            self.modules[i].versions = sorted(self.modules[i].versions,
-                    cmp=lambda x,y: cmp(os.path.basename(x),
-                        os.path.basename(y)))
+            # Delete modules without versions (i.e. without module files)
+            for i in range(len(self.modules)):
+                if len(self.modules[i].versions) == 0:
+                    del self.modules[i]
+            # Sort modules
+            self.modules = natsorted(self.modules,
+                    key=lambda m: m.name)
+            # Sort versions
+            for i in range(len(self.modules)):
+                self.modules[i].versions = natsorted(self.modules[i].versions,
+                        key=lambda v: os.path.basename(v))
+            # Set default modules for modules that do not have one
+            for i in range(len(self.modules)):
+                if self.modules[i].default is None:
+                    self.modules[i].default = self.modules[i].versions[-1]
+            # Set initialized state
+            self.is_init_modules = True
 
     def find_module(self, name):
         head, tail = os.path.split(name)
-        name = tail if head == '' else head
+        name = tail if head == '' else os.path.split(head)[1]
         for i, module in enumerate(self.modules):
             if module.name == name:
                 return i
@@ -204,26 +222,90 @@ class Modm:
             self.be.error("See 'modm help help' for a list of help topics.")
 
     def cmd_version(self):
-        self.be.echo("modm version {v}".format(v=self.version))
+        self.be.echo("modm version {v}".format(v=__version__))
 
     def cmd_avail(self):
+        self.init_env()
         self.init_modules()
-        for module in self.modules:
+        self.print_modules(self.modules)
+
+    def print_modules(self, modules):
+        maxlength = 0
+        for module in modules:
+            maxlength = max(maxlength, len(module.name))
+        for module in modules:
+            versions = []
             for version in module.versions:
-                self.be.echo(os.path.join(module.name,
-                    os.path.basename(version)))
+                v = os.path.basename(version)
+                if version == module.default:
+                    v = v + '(default)'
+                if version in self.env.modloaded:
+                    v = self.be.highlight(v + '*', kind='info')
+                versions.append(v)
+            self.be.echo('{m:{l}} {v}'.format(m=module.name+':', l=maxlength+1,
+                    v=', '.join(versions)))
 
     def cmd_list(self):
         self.init_modules()
-        pass
+        for modfile in natsorted(self.env.modloaded):
+            head, modversion = os.path.split(modfile)
+            _, modname = os.path.split(head)
+            self.be.echo(os.path.join(modname, modversion))
 
     def cmd_load(self):
         self.init_modules()
-        pass
+        for name in self.args:
+            index = self.find_module(name)
+            if index is not None:
+                self.load_module(name)
+            else:
+                self.be.error("Module '{m}' not found.".format(m=name))
+        self.be.export(self.env.modloaded_var, self.env.get_modloaded_str())
+
+    def load_module(self, name):
+        modfile = self.get_module_file(name)
+        if modfile is None:
+            return
+        else:
+            self.env.add_loaded_module(modfile)
+
+    def unload_module(self, name):
+        modname, modversion = self.decode_name(name)
+        for modfile, (modnamefile, modversionfile) in zip(self.env.modloaded,
+                map(self.decode_file, self.env.modloaded)):
+            if modname == modnamefile and (
+                    modversion is None or modversion == modversionfile):
+                self.env.modloaded.remove(modfile)
+
+    def get_module_file(self, name):
+        i = self.find_module(name)
+        if i is None:
+            return None
+        else:
+            modname, modversion = self.decode_name(name)
+            if not modversion:
+                return self.modules[i].default
+            else:
+                modules = [modfile for modfile in self.modules[i].versions if
+                    os.path.basename(modfile) == modversion]
+                return modules[0] if len(modules) > 0 else None
+
+    def decode_file(self, modfile):
+        head, modversion = os.path.split(modfile)
+        _, modname = os.path.split(head)
+        return modname, modversion
+
+    def decode_name(self, name):
+        head, tail = os.path.split(name)
+        modname = tail if head == '' else head
+        modversion = tail if (head != '' and tail != '') else None
+        return modname, modversion
 
     def cmd_unload(self):
         self.init_modules()
-        pass
+        for name in self.args:
+            self.unload_module(name)
+        self.be.export(self.env.modloaded_var, self.env.get_modloaded_str())
 
 
 # Run this script only if it is called directly
