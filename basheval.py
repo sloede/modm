@@ -95,4 +95,4 @@ class BashEval:
             self.echo(prefix + line, kind='error', newline=newline)
 
     def export(self, key, value):
-        self.execute("export {k}={v}".format(k=key, v=value))
+        self.execute("export {k}='{v}'".format(k=key, v=value))
