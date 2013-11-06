@@ -26,16 +26,21 @@ class Env:
 
     def __init__(self, modpath_var='MODM_MODULES_PATH',
             modloaded_var='MODM_LOADED_MODULES'):
-        self.exepath = self.load_path_var(self.exepath_var)
-        self.libpath = self.load_path_var(self.libpath_var)
-        self.modpath = self.load_path_var(modpath_var)
-        self.modloaded = self.load_path_var(modloaded_var)
+        # Save arguments
+        self.modpath_var = modpath_var
+        self.modloaded_var = modloaded_var
 
-    def load_path_var(self, variable):
-        path = self.load_text_var(variable)
+        # Init other members
+        self.exepath = self.load_path(self.exepath_var)
+        self.libpath = self.load_path(self.libpath_var)
+        self.modpath = self.load_path(modpath_var)
+        self.modloaded = self.load_path(modloaded_var)
+
+    def load_path(self, variable):
+        path = self.load_string(variable)
         return path.split(os.path.pathsep) if path else []
 
-    def load_text_var(self, variable):
+    def load_string(self, variable):
         return os.environ[variable] if os.environ.has_key(variable) else None
 
     def get_exepath_str(self):
@@ -43,3 +48,13 @@ class Env:
 
     def get_libpath_str(self):
         return os.path.pathsep.join(self.libpath)
+
+    def get_modloaded_str(self):
+        return os.path.pathsep.join(self.modloaded)
+
+    def add_loaded_module(self, module):
+        self.modloaded.append(module)
+
+    def remove_loaded_module(self, module):
+        if module in self.modloaded:
+            self.modloaded.remove(module)
