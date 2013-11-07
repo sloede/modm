@@ -58,3 +58,81 @@ class Env:
     def remove_loaded_module(self, module):
         if module in self.modloaded:
             self.modloaded.remove(module)
+
+class EnvVariable:
+    kinds = ['string', 'path']
+    def __init__(self, name, kind='string'):
+        # Save arguments
+        self._name = name
+        self._kind = kind
+
+        # Init value
+        self._value = None
+        self.load()
+
+        # Init other members
+        self._modified = False
+
+    def load(self):
+        self._value = os.environ[_name] if os.environ.has_key(_name) else None
+        if self._value is not None and self._kind == 'path':
+            self._value = self._value.split(os.path.pathsep) if self._value else []
+
+    def is_set(self):
+        return True if self._value is not None else False
+
+    def is_modified(self):
+        return self._modified
+
+    def get_name(self):
+        return self._name
+
+    def get_value(self):
+        if self._value is None:
+            return None
+        if self._kind == 'path':
+            return os.path.pathsep.join(self._value)
+        else:
+            return self._value
+
+    def get_export(self):
+        return (self.self.get_name(), self.get_value())
+
+    def init_variable(self):
+        if self._value is not None:
+            return
+        if self._kind == 'path':
+            self._value = []
+        else:
+            self._value = ''
+        self._modified = True
+
+    def prepend(self, value, undo=False):
+        self.init_variable()
+        if not undo:
+            if self._kind == 'path':
+                self._value.insert(0, value)
+            else:
+                self._value = value + self._value
+        else:
+            if self._kind == 'path':
+                if value in self._value:
+                    self._value.remove(value)
+            else:
+                self._value = self._value.replace(value, '', 1)
+        self._modified = True
+
+    def append(self, value, undo=False):
+        self.init_variable()
+        if not undo:
+            if self._kind == 'path':
+                self._value.append(value)
+            else:
+                self._value = self._value + value
+        else:
+            if self._kind == 'path':
+                if value in self._value:
+                    del self._value[-1-l[::-1].index(value)]
+            else:
+                self._value = ''.join(self._value.rsplit(value, 1))
+        self._modified = True
