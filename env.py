@@ -18,12 +18,10 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
+# System imports
 import os
 
 class Env:
-    exepath_var = 'PATH'
-    libpath_var = 'LD_LIBRARY_PATH'
-
     def __init__(self, modpath_var='MODM_MODULES_PATH',
             modloaded_var='MODM_LOADED_MODULES'):
         # Save arguments
@@ -31,10 +29,9 @@ class Env:
         self.modloaded_var = modloaded_var
 
         # Init other members
-        self.exepath = self.load_path(self.exepath_var)
-        self.libpath = self.load_path(self.libpath_var)
         self.modpath = self.load_path(modpath_var)
         self.modloaded = self.load_path(modloaded_var)
+        self.variables = dict()
 
     def load_path(self, variable):
         path = self.load_string(variable)
@@ -42,12 +39,6 @@ class Env:
 
     def load_string(self, variable):
         return os.environ[variable] if os.environ.has_key(variable) else None
-
-    def get_exepath_str(self):
-        return os.path.pathsep.join(self.exepath)
-
-    def get_libpath_str(self):
-        return os.path.pathsep.join(self.libpath)
 
     def get_modloaded_str(self):
         return os.path.pathsep.join(self.modloaded)
@@ -58,6 +49,17 @@ class Env:
     def remove_loaded_module(self, module):
         if module in self.modloaded:
             self.modloaded.remove(module)
+
+    def add_path_variable(self, name):
+        if not self.variables.has_key(name):
+            self.variables[key] = EnvVariable(name, 'path')
+
+    def add_string_variable(self, name):
+        if not self.variables.has_key(name):
+            self.variables[key] = EnvVariable(name, 'string')
+
+    def get_modified_variables(self):
+        return [v.get_export() for v in self.variables if v.is_modified()]
 
 class EnvVariable:
     kinds = ['string', 'path']
@@ -74,9 +76,11 @@ class EnvVariable:
         self._modified = False
 
     def load(self):
-        self._value = os.environ[_name] if os.environ.has_key(_name) else None
+        self._value = (os.environ[self._name] if os.environ.has_key(self._name)
+                else None)
         if self._value is not None and self._kind == 'path':
-            self._value = self._value.split(os.path.pathsep) if self._value else []
+            self._value = (self._value.split(os.path.pathsep) if self._value
+                    else [])
 
     def is_set(self):
         return True if self._value is not None else False
@@ -96,7 +100,7 @@ class EnvVariable:
             return self._value
 
     def get_export(self):
-        return (self.self.get_name(), self.get_value())
+        return self.get_name(), self.get_value()
 
     def init_variable(self):
         if self._value is not None:
