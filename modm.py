@@ -19,7 +19,7 @@
 
 
 # Current Modm version
-__version__ = '0.2'
+__version__ = '0.2+x'
 
 # System imports
 import sys
@@ -201,14 +201,17 @@ class Modm:
                 Modm.help_file_dir, topic + Modm.help_file_suffix)
 
         if os.path.isfile(help_file):
-            with open(help_file, 'r') as f:
-                self.be.echo(f.read(), newline=False)
+            self.print_file(help_file)
         else:
             self.be.error("Help file '{f}' not found.".format(f=help_file),
                     internal=True)
             self.be.error("Please send an email with the command you used and "
                     + "the error message printed above to '{e}'."
                     .format(e=self.admin_email), internal=True)
+
+    def print_file(self, path):
+        with open(path, 'r') as f:
+            self.be.echo(f.read(), newline=False)
 
     def cmd_help(self):
         topic = self.args[0] if len(self.args) > 0 else None
@@ -225,8 +228,16 @@ class Modm:
         elif topic in ['unload']:
             self.print_help(os.path.join('commands', 'unload'))
         else:
-            self.be.error("Unknown help topic '{t}'.".format(t=topic))
-            self.be.error("See 'modm help help' for a list of help topics.")
+            self.init_modules()
+            index = self.find_module(topic)
+            if index is None:
+                self.be.error("Unknown help topic '{t}'.".format(t=topic))
+                self.be.error("See 'modm help help' for a list of help topics.")
+            elif self.modules[index].help_file is None:
+                self.be.error("No help available for module '{m}'.".format(
+                    m=self.modules[index].name))
+            else:
+                self.print_file(self.modules[index].help_file)
 
     def cmd_version(self):
         self.be.echo("modm version {v}".format(v=__version__))
