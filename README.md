@@ -18,13 +18,15 @@ Features
 *   Completely written in Python
 *   Installation-free
 *   Built-in documentation for commands
-*   Nothing else :(
+*   Module file syntax:
+    *   Append/prepend environment variables of path and string type
+    *   Print messages on loading/unloading
 
 Planned (intermediate future):
 
-*   Set `PATH` and `LD_LIBRARY_PATH` variables
 *   Nicely formatted and *colorized* output
 *   Built-in documentation for modules
+*   Support for module categories
 
 
 Planned (in a land far, far away):
