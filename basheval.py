@@ -18,11 +18,12 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
+# System imports
 import textwrap
 
 class BashEval:
     textwidth = 80
-    replacements = {'$': '\$', '`': '\`', '!': '\!', '\n': '\\n', '"': '\\"'}
+    replacements = {'$': '\$', '`': '\`', '\n': '\\n', '"': '\\"'}
 
     def __init__(self):
         self.cmds = []
