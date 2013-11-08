@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 # Modm - Modules iMproved
 # Copyright (C) 2013  Michael Schlottke
@@ -19,7 +19,7 @@
 
 
 # Current Modm version
-__version__ = '0.1+x'
+__version__ = '0.2'
 
 # System imports
 import sys
@@ -30,6 +30,7 @@ from basheval import BashEval
 from env import Env
 from module import Module
 from natsort import natsorted
+from modfileparser import ModfileParser
 
 def main():
     Modm(sys.argv).run()
@@ -57,11 +58,13 @@ class Modm:
         self.args = []
         self.env = None
         self.modules = []
+        self.parser = None
 
         # Set init variables to False
         self.is_init_argv = False
         self.is_init_env = False
         self.is_init_modules = False
+        self.is_init_parser = False
 
     def run(self):
         try:
@@ -180,6 +183,10 @@ class Modm:
             # Set initialized state
             self.is_init_modules = True
 
+    def init_parser(self):
+        if not self.is_init_parser:
+            self.parser = ModfileParser(self.env, self.be)
+
     def find_module(self, name):
         head, tail = os.path.split(name)
         name = tail if head == '' else os.path.split(head)[1]
@@ -254,20 +261,25 @@ class Modm:
 
     def cmd_load(self):
         self.init_modules()
+        self.init_parser()
         for name in self.args:
             index = self.find_module(name)
             if index is not None:
                 self.load_module(name)
             else:
                 self.be.error("Module '{m}' not found.".format(m=name))
+        self.export_modified()
         self.be.export(self.env.modloaded_var, self.env.get_modloaded_str())
 
     def load_module(self, name):
         modfile = self.get_module_file(name)
         if modfile is None:
             return
+        elif modfile in self.env.modloaded:
+            return
         else:
-            self.env.add_loaded_module(modfile)
+            if self.parser.load(modfile):
+                self.env.add_loaded_module(modfile)
 
     def unload_module(self, name):
         modname, modversion = self.decode_name(name)
@@ -275,7 +287,8 @@ class Modm:
                 map(self.decode_file, self.env.modloaded)):
             if modname == modnamefile and (
                     modversion is None or modversion == modversionfile):
-                self.env.modloaded.remove(modfile)
+                if self.parser.unload(modfile):
+                    self.env.modloaded.remove(modfile)
 
     def get_module_file(self, name):
         i = self.find_module(name)
@@ -303,9 +316,16 @@ class Modm:
 
     def cmd_unload(self):
         self.init_modules()
+        self.init_parser()
         for name in self.args:
             self.unload_module(name)
+        self.export_modified()
         self.be.export(self.env.modloaded_var, self.env.get_modloaded_str())
+
+    def export_modified(self):
+        for var in [var for var in self.env.variables.values()
+                if var.is_modified()]:
+            self.be.export(*var.get_export())
 
 
 # Run this script only if it is called directly
