@@ -51,12 +51,12 @@ class ModfileParser:
                 *x, load=False)
 
     def cmd_prepend_variable(self, name, value, kind='string'):
-        if not self.env.variables.has_key(name):
+        if not name in self.env.variables:
             self.env.variables[name] = EnvVariable(name, kind=kind)
         self.env.variables[name].prepend(value, undo=self.do_unload)
 
     def cmd_append_variable(self, name, value, kind='string'):
-        if not self.env.variables.has_key(name):
+        if not name in self.env.variables:
             self.env.variables[name] = EnvVariable(name, kind=kind)
         self.env.variables[name].append(value, undo=self.do_unload)
 

@@ -26,9 +26,9 @@ import re
 def natsorted(l, **args):
     """Sort the given iterable in a way that humans expect."""
     convert = lambda s: int(s) if s.isdigit() else s
-    if args.has_key('cmp'):
+    if 'cmp' in args:
         return None
-    if args.has_key('key'):
+    if 'key' in args:
         keyfun = args['key']
         del args['key']
     else:

@@ -80,8 +80,9 @@ class BashEval:
         return '\n'.join(lines) + ('\n' if final_newline else '')
 
     def quote(self, s):
-        return reduce(lambda acc, kv: acc.replace(*kv),
-                BashEval.replacements.iteritems(), s)
+        for pattern, substitute in BashEval.replacements.items():
+            s = s.replace(pattern, substitute)
+        return s
 
     def echo(self, message, kind='normal', newline=True, dedent=False):
         nl = r'\n' if newline else ''

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 # Modm - Modules iMproved
 # Copyright (C) 2013  Michael Schlottke
@@ -19,7 +19,7 @@
 
 
 # Current Modm version
-__version__ = '0.2'
+__version__ = '0.1+x'
 
 # System imports
 import sys
@@ -52,7 +52,7 @@ class Modm:
         # Init other members
         self.be = BashEval()
         self.admin_email = os.environ[self.admin_email_var] if (
-                os.environ.has_key(self.admin_email_var)) else (
+                self.admin_email_var in os.environ) else (
                         self.admin_default_email)
         self.cmd = None
         self.args = []

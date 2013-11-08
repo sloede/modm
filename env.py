@@ -38,7 +38,7 @@ class Env:
         return path.split(os.path.pathsep) if path else []
 
     def load_string(self, variable):
-        return os.environ[variable] if os.environ.has_key(variable) else None
+        return os.environ[variable] if variable in os.environ else None
 
     def get_modloaded_str(self):
         return os.path.pathsep.join(self.modloaded)
@@ -51,11 +51,11 @@ class Env:
             self.modloaded.remove(module)
 
     def add_path_variable(self, name):
-        if not self.variables.has_key(name):
+        if not name in self.variables:
             self.variables[key] = EnvVariable(name, 'path')
 
     def add_string_variable(self, name):
-        if not self.variables.has_key(name):
+        if not name in self.variables:
             self.variables[key] = EnvVariable(name, 'string')
 
     def get_modified_variables(self):
@@ -76,7 +76,7 @@ class EnvVariable:
         self._modified = False
 
     def load(self):
-        self._value = (os.environ[self._name] if os.environ.has_key(self._name)
+        self._value = (os.environ[self._name] if self._name in os.environ
                 else None)
         if self._value is not None and self._kind == 'path':
             self._value = (self._value.split(os.path.pathsep) if self._value
