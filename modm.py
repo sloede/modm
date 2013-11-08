@@ -40,6 +40,7 @@ class Modm:
     help_file_dir = 'doc'
     module_help_file = '.help'
     module_default_file = '.default'
+    module_category_file = '.category'
     modules_path_var = 'MODM_MODULES_PATH'
     modules_loaded_var = 'MODM_LOADED_MODULES'
     admin_email_var = 'MODM_ADMIN_EMAIL'
@@ -155,6 +156,12 @@ class Modm:
                                 self.modules[index].help_file = (
                                         os.path.join(modpath,
                                         self.module_help_file))
+                        elif modversion == self.module_category_file:
+                            # Set category
+                            if self.modules[index].category is None:
+                                with open(modfile, 'r') as f:
+                                    self.modules[index].category = (
+                                    f.read().strip())
                         else:
                             # Add version file
                             if modversion not in [
@@ -249,19 +256,37 @@ class Modm:
 
     def print_modules(self, modules):
         maxlength = 0
+        categories = set()
+        # Determine all categories and the maximum length of the modules
         for module in modules:
             maxlength = max(maxlength, len(module.name))
-        for module in modules:
-            versions = []
-            for version in module.versions:
-                v = os.path.basename(version)
-                if version == module.default:
-                    v = v + '(default)'
-                if version in self.env.modloaded:
-                    v = self.be.highlight(v + '*', kind='info')
-                versions.append(v)
-            self.be.echo('{m:{l}} {v}'.format(m=module.name+':', l=maxlength+1,
-                    v=', '.join(versions)))
+            categories.add(module.category.strip().upper())
+        # Natsort categories and put 'None' at the end if present
+        if None in categories:
+            categories = natsorted([c for c in categories if c is not None])
+            categories.append(None)
+        else:
+            categories = natsorted(list(categories))
+        # Print modules by category
+        first = True
+        for category in categories:
+            if first:
+                first = False
+            else:
+                self.be.echo('')
+            self.be.echo(category if category else '<UNCATEGORIZED>')
+            for module in [m for m in modules if
+                    m.category.strip().upper() == category]:
+                versions = []
+                for version in module.versions:
+                    v = os.path.basename(version)
+                    if version == module.default:
+                        v = v + '(default)'
+                    if version in self.env.modloaded:
+                        v = self.be.highlight(v + '*', kind='info')
+                    versions.append(v)
+                self.be.echo('  {m:{l}} {v}'.format(m=module.name+':', l=maxlength+1,
+                        v=', '.join(versions)))
 
     def cmd_list(self):
         self.init_modules()
