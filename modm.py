@@ -301,11 +301,22 @@ class Modm:
         for name in self.args:
             index = self.find_module(name)
             if index is not None:
+                if self.is_loaded(name):
+                    self.unload_module(self.decode_name(name)[0])
                 self.load_module(name)
             else:
                 self.be.error("Module '{m}' not found.".format(m=name))
         self.export_modified()
         self.be.export(self.env.modloaded_var, self.env.get_modloaded_str())
+
+    def is_loaded(self, name):
+        modname, _ = self.decode_name(name)
+        if modname in [modname for modname, _ in
+                map(self.decode_file, self.env.modloaded)]:
+            return True
+        else:
+            return False
+
 
     def load_module(self, name):
         modfile = self.get_module_file(name)
