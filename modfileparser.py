@@ -78,16 +78,17 @@ class ModfileParser:
         with open(modfile, 'r') as f:
             lines = f.readlines()
         try:
-            for tokens in [shlex.split(line) for line in lines]:
-                if len(tokens) == 0:
-                    continue
-                cmd = tokens[0]
-                args = tokens[1:]
-                if cmd in self.commands:
-                    self.commands[cmd](*args)
-            return True
+            splitlines = [shlex.split(line) for line in lines]
         except Exception as e:
             self.be.error("Bad syntax in module file '{mf}': {e} ({n})".format(
                 mf=modfile, e=e, n=type(e).__name__))
             return False
+        for tokens in splitlines:
+            if len(tokens) == 0:
+                continue
+            cmd = tokens[0]
+            args = tokens[1:]
+            if cmd in self.commands:
+                self.commands[cmd](*args)
+        return True
 
