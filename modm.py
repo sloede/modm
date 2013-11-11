@@ -194,12 +194,15 @@ class Modm:
         if not self.is_init_parser:
             self.parser = ModfileParser(self.env, self.be)
 
-    def find_module(self, name):
-        head, tail = os.path.split(name)
-        name = tail if head == '' else os.path.split(head)[1]
+    def find_module(self, name, strict=False):
+        modname, modversion = self.decode_name(name)
         for i, module in enumerate(self.modules):
-            if module.name == name:
-                return i
+            if module.name == modname:
+                if strict and modversion is not None and (modversion not in
+                        map(os.path.basename, module.versions)):
+                    return None
+                else:
+                    return i
         return None
 
     def print_help(self, topic):
@@ -299,7 +302,7 @@ class Modm:
         self.init_modules()
         self.init_parser()
         for name in self.args:
-            index = self.find_module(name)
+            index = self.find_module(name, strict=True)
             if index is not None:
                 if self.is_loaded(name):
                     self.unload_module(self.decode_name(name)[0])
