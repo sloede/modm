@@ -98,3 +98,6 @@ class BashEval:
 
     def export(self, key, value):
         self.execute("export {k}='{v}'".format(k=key, v=value))
+
+    def unset(self, key):
+        self.execute("unset {k}".format(k=key))
