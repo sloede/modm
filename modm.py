@@ -309,7 +309,7 @@ class Modm:
                 self.load_module(name)
             else:
                 self.be.error("Module '{m}' not found.".format(m=name))
-        self.export_modified()
+        self.process_modified()
         self.be.export(self.env.modloaded_var, self.env.get_modloaded_str())
 
     def is_loaded(self, name):
@@ -369,13 +369,16 @@ class Modm:
         self.init_parser()
         for name in self.args:
             self.unload_module(name)
-        self.export_modified()
+        self.process_modified()
         self.be.export(self.env.modloaded_var, self.env.get_modloaded_str())
 
-    def export_modified(self):
+    def process_modified(self):
         for var in [var for var in self.env.variables.values()
                 if var.is_modified()]:
-            self.be.export(*var.get_export())
+            if var.is_unset():
+                self.be.unset(var.get_name())
+            else:
+                self.be.export(*var.get_export())
 
 
 # Run this script only if it is called directly
