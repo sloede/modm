@@ -19,7 +19,7 @@
 
 
 # Current Modm version
-__version__ = '0.2+x'
+__version__ = '0.3'
 
 # System imports
 import sys
