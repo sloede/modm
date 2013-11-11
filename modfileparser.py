@@ -27,6 +27,8 @@ from env import Env,EnvVariable
 from basheval import BashEval
 
 class ModfileParser:
+    backup_prefix = 'MODM_BACKUP_'
+
     def __init__(self, env=Env(), basheval=BashEval()):
         # Save arguments
         self.env = env
@@ -49,6 +51,7 @@ class ModfileParser:
                 *x, unload=False)
         self.commands['print_unload'] = lambda *x: self.cmd_print(
                 *x, load=False)
+        self.commands['set'] = self.cmd_set
 
     def cmd_prepend_variable(self, name, value, kind='string'):
         if not name in self.env.variables:
@@ -63,6 +66,25 @@ class ModfileParser:
     def cmd_print(self, message, load=True, unload=True):
         if (load and not self.do_unload) or (unload and self.do_unload):
             self.be.echo(message)
+
+    def cmd_set(self, name, value):
+        if not name in self.env.variables:
+            self.env.variables[name] = EnvVariable(name)
+        backupname = self.backup_prefix + name
+        if backupname not in self.env.variables:
+            self.env.variables[backupname] = EnvVariable(backupname)
+        if not self.do_unload:
+            if self.env.variables[name].is_set():
+                self.env.variables[backupname].set_value(
+                        self.env.variables[name].get_value())
+            self.env.variables[name].set_value(value)
+        else:
+            if self.env.variables[backupname].is_set():
+                self.env.variables[name].set_value(
+                        self.env.variables[backupname].get_value())
+                self.env.variables[backupname].unset()
+            else:
+                self.env.variables[name].unset()
 
     def load(self, modfile):
         self.do_unload = False
