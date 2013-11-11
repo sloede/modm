@@ -61,6 +61,7 @@ class Env:
     def get_modified_variables(self):
         return [v.get_export() for v in self.variables if v.is_modified()]
 
+
 class EnvVariable:
     kinds = ['string', 'path']
     def __init__(self, name, kind='string'):
@@ -74,6 +75,7 @@ class EnvVariable:
 
         # Init other members
         self._modified = False
+        self._unset = False
 
     def load(self):
         self._value = (os.environ[self._name] if self._name in os.environ
@@ -87,6 +89,9 @@ class EnvVariable:
 
     def is_modified(self):
         return self._modified
+
+    def is_unset(self):
+        return self._unset
 
     def get_name(self):
         return self._name
@@ -103,7 +108,7 @@ class EnvVariable:
         return self.get_name(), self.get_value()
 
     def init_variable(self):
-        if self._value is not None:
+        if self.is_set():
             return
         if self._kind == 'path':
             self._value = []
@@ -139,4 +144,13 @@ class EnvVariable:
                     del self._value[-1-l[::-1].index(value)]
             else:
                 self._value = ''.join(self._value.rsplit(value, 1))
+        self._modified = True
+
+    def set_value(self, value):
+        self.init_variable()
+        self._value = value
+        self._modified = True
+
+    def unset(self):
+        self._unset = True
         self._modified = True
