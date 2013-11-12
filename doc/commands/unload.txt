@@ -7,6 +7,3 @@ usage: unload <module> [<module>...]
 
   If you provide more than one <module> argument, all modules are unloaded
   individually in the order in which they appeared.
-
-  Module names may be abbreviated if the incomplete name is long enough to
-  uniquely identify a module and/or module version.

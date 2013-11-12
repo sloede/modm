@@ -8,5 +8,5 @@ Available commands:
    unload        Unload modules.
 
 See 'modm help <command>' for more information on a specific command. You may
-use incomplete commands/module names as long as the provided string is enough
-to uniquely identify one command/module.
+use incomplete commands as long as the provided string is long enough to
+identify one command.

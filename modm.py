@@ -84,7 +84,6 @@ class Modm:
     def rununsafe(self):
         self.init_argv()
         command, alternatives = self.parse_command(self.cmd)
-
         if command in ['help', '--help']:
             self.cmd_help()
         elif command in ['--version']:
@@ -246,19 +245,28 @@ class Modm:
             self.be.echo(f.read(), newline=False)
 
     def cmd_help(self):
-        topic = self.parse_command(self.args[0]) if len(self.args) > 0 else None
+        topic = self.args[0] if len(self.args) > 0 else None
+        command, alternatives = self.parse_command(topic)
         if self.cmd in ['--help'] or topic is None:
             self.print_help('usage')
-        elif topic in ['help']:
+        elif command in ['help']:
             self.print_help(os.path.join('commands', 'help'))
-        elif topic in ['avail', 'status']:
+        elif command in ['avail', 'status']:
             self.print_help(os.path.join('commands', 'avail'))
-        elif topic in ['list']:
+        elif command in ['list']:
             self.print_help(os.path.join('commands', 'list'))
-        elif topic in ['load']:
+        elif command in ['load']:
             self.print_help(os.path.join('commands', 'load'))
-        elif topic in ['unload']:
+        elif command in ['unload']:
             self.print_help(os.path.join('commands', 'unload'))
+        elif command is None and len(alternatives) > 0:
+            self.be.error("Command '{c}' is ambiguous. See 'modm help'.".format(
+                c=topic))
+            self.be.echo()
+            self.be.echo("Did you mean one of these?")
+            for a in alternatives:
+                self.be.echo("  {u}[{t}]".format(
+                    u=a[0:len(self.cmd)+1], t=a[len(self.cmd)+1:]))
         else:
             self.init_modules()
             index = self.find_module(topic)
