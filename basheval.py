@@ -132,8 +132,8 @@ class BashEval:
         nl = r'\n' if newline else ''
 
         # Add printf command to command queue
-        self.execute('printf "{m}{n}"'.format(m=self.highlight(
-            self.quote(self.wrap(message, dedent=dedent)), kind=kind), n=nl))
+        self.execute('printf "{m}{n}"'.format(m=self.highlight(self.quote(
+                self.wrap(message, dedent=dedent)), kind=kind), n=nl))
 
     def error(self, message, newline=True, internal=False):
         """Generate command to print error message.
