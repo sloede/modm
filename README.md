@@ -18,16 +18,14 @@ Features
 *   Completely written in Python
 *   Installation-free
 *   Built-in documentation for commands
+*   Partial commands
 *   Module file syntax:
     *   Append/prepend environment variables of path and string type
+    *   Set environment variables while preserving previous values
     *   Print messages on loading/unloading
-
-Planned (intermediate future):
-
 *   Nicely formatted and *colorized* output
+*   Modules organized by categories
 *   Built-in documentation for modules
-*   Support for module categories
-
 
 Planned (in a land far, far away):
 
@@ -82,3 +80,6 @@ Usage
 After installation, make sure that the `modm-init.sh` is sourced properly, e.g.
 by logging out and in again. Then just execute `modm` in the shell and let the
 built-in documentation take it from there.
+
+*Note:* You may disable colorized output by setting the environment variable
+`MODM_USE_COLORS` to `off`.
