@@ -13,3 +13,6 @@ usage: load <module> [<module>...]
   This is especially true for different versions of the same module: by design,
   only one version of a module can only be ever active. If an already loaded
   module is loaded again, it will be ignored.
+
+  Module names may be abbreviated if the incomplete name is long enough to
+  uniquely identify a module and/or module version.

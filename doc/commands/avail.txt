@@ -1,4 +1,4 @@
-avail: Show all modules that are currently available.
+avail (status): Show all modules that are currently available.
 usage: avail [<module>...]
 
   List all modules that are currently available, including those that are
@@ -7,3 +7,5 @@ usage: avail [<module>...]
 
   If one or more arguments are provided, only modules matching one of the
   <module> arguments are shown.
+
+  'status' is an alias for 'avail'.
