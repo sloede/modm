@@ -128,7 +128,7 @@ class EnvVariable:
         if not self.is_set():
             return None
         # If it is a path variable, return as string, otherwise return as string
-        if self._kind == 'path':
+        elif self._kind == 'path':
             return os.path.pathsep.join(self._value)
         else:
             return self._value
@@ -147,6 +147,7 @@ class EnvVariable:
             self._value = []
         else:
             self._value = ''
+
         # Mark variable as modified
         self._modified = True
 
@@ -170,6 +171,7 @@ class EnvVariable:
                     self._value.remove(value)
             else:
                 self._value = self._value.replace(value, '', 1)
+
         # Mark variable as modified
         self._modified = True
 
@@ -193,6 +195,7 @@ class EnvVariable:
                     del self._value[-1-l[::-1].index(value)]
             else:
                 self._value = ''.join(self._value.rsplit(value, 1))
+
         # Mark variable as modified
         self._modified = True
 
