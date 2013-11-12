@@ -293,7 +293,8 @@ class Modm:
         # Determine all categories and the maximum length of the modules
         for module in modules:
             maxlength = max(maxlength, len(module.name))
-            categories.add(module.category.strip().upper())
+            categories.add(module.category.strip().upper()
+                    if module.category else None)
         # Natsort categories and put 'None' at the end if present
         if None in categories:
             categories = natsorted([c for c in categories if c is not None])
@@ -308,8 +309,10 @@ class Modm:
             else:
                 self.be.echo('')
             self.be.echo(category if category else '<UNCATEGORIZED>')
-            for module in [m for m in modules if
-                    m.category.strip().upper() == category]:
+            for module in [m for m in modules if (
+                    (True if category is None else False) if (
+                        m.category is None) else (
+                    m.category.strip().upper() == category))]:
                 versions = []
                 for version in module.versions:
                     v = os.path.basename(version)
@@ -318,8 +321,8 @@ class Modm:
                     if version in self.env.modloaded:
                         v = self.be.highlight(v + '*', kind='info')
                     versions.append(v)
-                self.be.echo('  {m:{l}} {v}'.format(m=module.name+':', l=maxlength+1,
-                        v=', '.join(versions)))
+                self.be.echo('  {m:{l}} {v}'.format(m=module.name+':',
+                        l=maxlength+1, v=', '.join(versions)))
 
     def cmd_list(self):
         self.init_modules()
