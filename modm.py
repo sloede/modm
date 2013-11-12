@@ -45,6 +45,7 @@ class Modm:
     modules_loaded_var = 'MODM_LOADED_MODULES'
     admin_email_var = 'MODM_ADMIN_EMAIL'
     admin_default_email = 'root@localhost'
+    available_commands = ['avail', 'status', 'help', 'list', 'load', 'unload']
 
     def __init__(self, argv=['modm.py']):
         # Save arguments
@@ -82,22 +83,31 @@ class Modm:
 
     def rununsafe(self):
         self.init_argv()
+        command, alternatives = self.parse_command(self.cmd)
 
-        if self.cmd in ['help', '--help']:
+        if command in ['help', '--help']:
             self.cmd_help()
-        elif self.cmd in ['--version']:
+        elif command in ['--version']:
             self.cmd_version()
-        elif self.cmd in ['avail']:
+        elif command in ['avail', 'status']:
             self.cmd_avail()
-        elif self.cmd in ['list']:
+        elif command in ['list']:
             self.cmd_list()
-        elif self.cmd in ['load']:
+        elif command in ['load']:
             self.cmd_load()
-        elif self.cmd in ['unload']:
+        elif command in ['unload']:
             self.cmd_unload()
-        elif not self.cmd:
+        elif command is None and alternatives is None:
             self.be.error("No command given.")
             self.print_help('usage')
+        elif command is None and len(alternatives) > 0:
+            self.be.error("Command '{c}' is ambiguous. See 'modm help'.".format(
+                c=self.cmd))
+            self.be.echo()
+            self.be.echo("Did you mean one of these?")
+            for a in alternatives:
+                self.be.echo("  {u}[{t}]".format(
+                    u=a[0:len(self.cmd)+1], t=a[len(self.cmd)+1:]))
         else:
             arg_type = "Option" if self.cmd[0] == '-' else "Command"
             self.be.error("{t} '{c}' not recognized."
@@ -109,6 +119,18 @@ class Modm:
             self.cmd = self.argv[1] if len(self.argv) > 1 else None
             self.args = self.argv[2:] if len(self.argv) > 2 else []
             self.is_init_argv = True
+
+    def parse_command(self, cmd):
+        if cmd is None:
+            return None, None
+        commands = [c for c in self.available_commands if c.startswith(cmd)]
+        if len(commands) == 1:
+            command = commands[0]
+            alternatives = []
+        else:
+            command = None
+            alternatives = commands
+        return command, alternatives
 
     def init_env(self):
         if not self.is_init_env:
@@ -224,12 +246,12 @@ class Modm:
             self.be.echo(f.read(), newline=False)
 
     def cmd_help(self):
-        topic = self.args[0] if len(self.args) > 0 else None
+        topic = self.parse_command(self.args[0]) if len(self.args) > 0 else None
         if self.cmd in ['--help'] or topic is None:
             self.print_help('usage')
         elif topic in ['help']:
             self.print_help(os.path.join('commands', 'help'))
-        elif topic in ['avail']:
+        elif topic in ['avail', 'status']:
             self.print_help(os.path.join('commands', 'avail'))
         elif topic in ['list']:
             self.print_help(os.path.join('commands', 'list'))
