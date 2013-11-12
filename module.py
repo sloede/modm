@@ -19,7 +19,12 @@
 
 
 class Module:
+    """
+    Class to store information about a module.
+    """
+
     def __init__(self):
+        """Reset all member variables to default state."""
         self.name = None
         self.versions = []
         self.loaded = None
