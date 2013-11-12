@@ -44,6 +44,7 @@ class Modm:
     modules_path_var = 'MODM_MODULES_PATH'
     modules_loaded_var = 'MODM_LOADED_MODULES'
     admin_email_var = 'MODM_ADMIN_EMAIL'
+    color_setting_var = 'MODM_USE_COLORS'
     admin_default_email = 'root@localhost'
     available_commands = ['avail', 'status', 'help', 'list', 'load', 'unload']
 
@@ -52,7 +53,13 @@ class Modm:
         self.argv = argv
 
         # Init other members
-        self.be = BashEval()
+        if self.color_setting_var in os.environ and (
+                os.environ[self.color_setting_var].lower() in
+                ['no', 'off', 'false']):
+            use_colors = False
+        else:
+            use_colors = True
+        self.be = BashEval(use_colors)
         self.admin_email = os.environ[self.admin_email_var] if (
                 self.admin_email_var in os.environ) else (
                         self.admin_default_email)

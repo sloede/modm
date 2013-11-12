@@ -3,12 +3,12 @@ usage: help [<command/module>]
 
   The help command displays information on various aspects of Modm. If invoked
   without arguments, general usage information is shown. You can also specify
-  one additional arguments (more arguments are silently ignored), which can be
+  one additional argument (more arguments are silently ignored), which can be
   either a command or a module name.
 
   If a <command> is specified, the built-in help for this command will be shown.
   This is a list of commands for which you can get help:
-  - avail
+  - avail, status
   - help
   - list
   - load

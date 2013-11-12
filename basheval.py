@@ -25,7 +25,8 @@ class BashEval:
     textwidth = 80
     replacements = {'$': '\$', '`': '\`', '\n': '\\n', '"': '\\"'}
 
-    def __init__(self):
+    def __init__(self, use_colors=True):
+        self.use_colors = use_colors
         self.cmds = []
 
     def clear(self):
@@ -45,7 +46,7 @@ class BashEval:
             kind = 'normal'
         prefix = ''
         suffix = ''
-        if kind == 'normal':
+        if not self.use_colors or kind == 'normal':
             pass
         elif kind == 'info':
             prefix = r'\033[34m'
