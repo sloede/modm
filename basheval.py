@@ -84,7 +84,7 @@ class BashEval:
             s = s.replace(pattern, substitute)
         return s
 
-    def echo(self, message, kind='normal', newline=True, dedent=False):
+    def echo(self, message='', kind='normal', newline=True, dedent=False):
         nl = r'\n' if newline else ''
         self.execute('printf "{m}{n}"'.format(
             m=self.highlight(self.quote(self.wrap(message, dedent=dedent)), kind=kind), n=nl))
