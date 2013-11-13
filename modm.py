@@ -56,7 +56,8 @@ class Modm:
     admin_email_var = 'MODM_ADMIN_EMAIL'
     color_setting_var = 'MODM_USE_COLORS'
     admin_default_email = 'root@localhost'
-    available_commands = ['avail', 'status', 'help', 'list', 'load', 'unload']
+    available_commands = ['avail', 'status', 'config', 'help', 'list', 'load',
+                          'unload']
 
     def __init__(self, argv=['modm.py']):
         """Save arguments and initialize member variables.
@@ -72,12 +73,12 @@ class Modm:
         if self.color_setting_var in os.environ and (
                 os.environ[self.color_setting_var].lower() in
                 ['no', 'off', 'false']):
-            use_colors = False
+            self.use_colors = False
         else:
-            use_colors = True
+            self.use_colors = True
 
         # Create Bash evaluation instance
-        self.be = BashEval(use_colors)
+        self.be = BashEval(self.use_colors)
 
         # Set admin email address to environment variable if found, otherwise
         # to built-in default
@@ -129,6 +130,8 @@ class Modm:
             self.cmd_version()
         elif command in ['avail', 'status']:
             self.cmd_avail()
+        elif command in ['config']:
+            self.cmd_config()
         elif command in ['list']:
             self.cmd_list()
         elif command in ['load']:
@@ -347,10 +350,10 @@ class Modm:
         # Return tuple
         return command, alternatives
 
-    def print_file(self, path):
+    def print_file(self, path, kind='normal'):
         """Open file at `path` and print its contents using BashEval."""
         with open(path, 'r') as f:
-            self.be.echo(f.read(), newline=False)
+            self.be.echo(f.read(), newline=False, kind=kind)
 
     def print_help(self, topic):
         """Print help file associated with `topic`. Issues error message if
@@ -486,6 +489,71 @@ class Modm:
         self.init_env()
         self.init_modules()
         self.print_modules(self.modules)
+
+    def cmd_config(self):
+        """Command 'config': show configuration for module or Modm itself."""
+        # Show configuration for Modm if no argument was specified
+        if len(self.args) == 0:
+            self.init_env()
+
+            self.be.echo("Modm executable script path variable: MODM_PY")
+            self.be.echo("Current script path: ", newline=False)
+            self.be.echo(os.environ['MODM_PY'], kind='info')
+            self.be.echo()
+            self.be.echo("Module path variable: {v}".format(
+                    v=self.modules_path_var))
+            self.be.echo("Currently active paths:")
+            for p in self.env.modpath:
+                self.be.echo(p, kind='info')
+            self.be.echo()
+            self.be.echo("Loaded modules variable: {v}".format(
+                    v=self.modules_loaded_var))
+            self.be.echo("Currently loaded module files:")
+            for m in self.env.modloaded:
+                self.be.echo(m, kind='info')
+            self.be.echo()
+            self.be.echo("Admin email address variable: {v}".format(
+                    v=self.admin_email_var))
+            self.be.echo("Current email address: ", newline=False)
+            self.be.echo(self.admin_email, kind='info')
+            self.be.echo()
+            self.be.echo("Color settings variable: {v}".format(
+                    v=self.color_setting_var))
+            self.be.echo("Current setting for color usage: ", newline=False)
+            self.be.echo("ON" if self.use_colors else "OFF", kind='info')
+            self.be.echo("(if variable is set to 'OFF', colors are disabled, "
+                         + "otherwise enabled)")
+
+        # Otherwise show configuration for module and ignore further arguments
+        else:
+            self.init_modules()
+            name = self.args[0]
+            modfile = self.get_module_file(name)
+            # If module file was not found, print error
+            if modfile is None:
+                self.be.error("Module '{m}' not found.".format(m=name))
+            # Otherwise parse module file for configuration information
+            else:
+                module = self.modules[self.find_module(name)]
+
+                self.be.echo("Module name: ", newline=False)
+                self.be.echo(module.name, kind='info')
+                self.be.echo("Available versions: ", newline=False)
+                self.be.echo(', '.join(
+                        [os.path.basename(v) for v in module.versions]),
+                             kind='info')
+                self.be.echo("Default version: ", newline=False)
+                self.be.echo(os.path.basename(module.default), kind='info')
+                self.be.echo("Category: ", newline=False)
+                self.be.echo(module.category.upper() if module.category else
+                        "<UNCATEGORIZED>", kind='info')
+                self.be.echo("Module help available: ", newline=False)
+                self.be.echo("yes" if module.help_file else "no", kind='info')
+                self.be.echo("Module file for '{n}': ".format(n=name),
+                             newline=False)
+                self.be.echo(modfile, kind='info')
+                self.be.echo("Module file content:")
+                self.print_file(modfile, kind='info')
 
     def cmd_help(self):
         """Command 'help': show help on commands or modules."""
