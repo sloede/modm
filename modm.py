@@ -353,7 +353,7 @@ class Modm:
     def print_file(self, path, kind='normal'):
         """Open file at `path` and print its contents using BashEval."""
         with open(path, 'r') as f:
-            self.be.echo(f.read(), newline=False, kind=kind)
+            self.be.echo(f.read(), newline=False, kind=kind, width=2048)
 
     def print_help(self, topic):
         """Print help file associated with `topic`. Issues error message if
