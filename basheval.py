@@ -120,7 +120,8 @@ class BashEval:
             s = s.replace(pattern, substitute)
         return s
 
-    def echo(self, message='', kind='normal', newline=True, dedent=False):
+    def echo(self, message='', kind='normal', newline=True, dedent=False,
+             width=None):
         """Generate command to print `message` using 'printf'.
 
         Arguments:
@@ -128,13 +129,15 @@ class BashEval:
           kind    -- type of highlighting to apply (cf. `highlight()`)
           newline -- if true, add newline to message
           dedent  -- if true, remove common indent from all lines (cf. `wrap()`)
+          width   -- maximum line width information to pass to `wrap()`
         """
         # Add newline only if option is set
         nl = r'\n' if newline else ''
 
         # Add printf command to command queue
-        self.execute('printf "{m}{n}"'.format(m=self.highlight(self.quote(
-                self.wrap(message, dedent=dedent)), kind=kind), n=nl))
+        self.execute('printf "{m}{n}"'.format(m=self.highlight(
+                self.quote(self.wrap(message, width=width, dedent=dedent)),
+                kind=kind), n=nl))
 
     def error(self, message, newline=True, internal=False):
         """Generate command to print error message.
