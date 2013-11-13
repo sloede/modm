@@ -42,6 +42,37 @@ Requirements
     * uses `\n` as the newline separator
 
 
+Getting Modm
+------------
+
+In order to obtain Modm, just clone the repository into a directory of your
+choice, e.g.
+
+    git clone https://github.com/sloede/modm.git path/to/modm
+
+This will get you the latest and coolest version of Modm. Note that the current
+git `HEAD` might contain experimental changes that will disappear later on, also
+the repository `HEAD` might have the odd unresolved bug in it (although I try
+not to push to GitHub if there is still something wrong).
+
+If you need to be sure that the Modm version you get is stable, check out the
+latest tagged version of Modm. The repository is tagged from time to time when
+a stable version of Modm has been reached, thus the tagged commits should be
+error-free.
+
+If you want the latest stable version, list all available tags using
+
+    git tag
+
+in your cloned repository. Then scroll down for the highest version number (e.g.
+*v1.0*) and check it out with
+
+   git checkout tags/v1.0
+
+Alternatively, have a look at the *Releases* tab on the GitHub website:
+[https://github.com/sloede/modm](https://github.com/sloede/modm)
+
+
 Installation
 ------------
 
