@@ -39,7 +39,6 @@ Requirements
 *   Python (>= 2.6)
 *   Bash (>= 4.1)
 *   any Unix-like OS that
-    * uses the `PATH` and `LD_LIBRARY_PATH` variables
     * uses `\n` as the newline separator
 
 
