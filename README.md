@@ -51,9 +51,9 @@ choice, e.g.
     git clone https://github.com/sloede/modm.git path/to/modm
 
 This will get you the latest and coolest version of Modm. Note that the current
-git `HEAD` might contain experimental changes that will disappear later on, also
-the repository `HEAD` might have the odd unresolved bug in it (although I try
-not to push to GitHub if there is still something wrong).
+repository `HEAD` might contain experimental changes that will disappear later
+on, also it might have the odd unresolved bug in it (although I try not to push
+to GitHub if there is still something wrong).
 
 If you need to be sure that the Modm version you get is stable, check out the
 latest tagged version of Modm. The repository is tagged from time to time when
@@ -67,7 +67,7 @@ If you want the latest stable version, list all available tags using
 in your cloned repository. Then scroll down for the highest version number (e.g.
 *v1.0*) and check it out with
 
-   git checkout tags/v1.0
+    git checkout tags/v1.0
 
 Alternatively, have a look at the *Releases* tab on the GitHub website:
 [https://github.com/sloede/modm](https://github.com/sloede/modm)
@@ -111,5 +111,6 @@ After installation, make sure that the `modm-init.sh` is sourced properly, e.g.
 by logging out and in again. Then just execute `modm` in the shell and let the
 built-in documentation take it from there.
 
-*Note:* You may disable colorized output by setting the environment variable
-`MODM_USE_COLORS` to `off`.
+*Note:* If you want to know how you can further tweak your installation of Modm
+(either as the admin or a normal user), run `modm config` and check the
+environment variables listed there.
