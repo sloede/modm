@@ -2,6 +2,7 @@ usage: modm [--version] [--help] <command> [<args>]
 
 Available commands:
    avail         Show all available modules.
+   config        Show configuration for Modm or module.
    help          Show this help or information on other commands.
    list          List all currently loaded modules.
    load          Load modules.

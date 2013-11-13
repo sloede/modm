@@ -9,6 +9,7 @@ usage: help [<command/module>]
   If a <command> is specified, the built-in help for this command will be shown.
   This is a list of commands for which you can get help:
   - avail, status
+  - config
   - help
   - list
   - load

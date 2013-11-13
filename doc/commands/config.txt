@@ -1,0 +1,10 @@
+config: Show configuration for Modm or a module.
+usage: config [<module>]
+
+  Display the current configuration of Modm. This shows all environment
+  variables that affect the execution of Modm, together with their current
+  values.
+
+  If a module <module> is specified, the configuration for that module is shown.
+  This includes the contents of the module file, thus enabling the user to check
+  what how the enviroment is changed when a module is loaded.
