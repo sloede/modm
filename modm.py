@@ -569,6 +569,8 @@ class Modm:
             self.print_help(os.path.join('commands', 'help'))
         elif command in ['avail', 'status']:
             self.print_help(os.path.join('commands', 'avail'))
+        elif command in ['config']:
+            self.print_help(os.path.join('commands', 'config'))
         elif command in ['list']:
             self.print_help(os.path.join('commands', 'list'))
         elif command in ['load']:

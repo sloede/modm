@@ -6,5 +6,5 @@ usage: config [<module>]
   values.
 
   If a module <module> is specified, the configuration for that module is shown.
-  This includes the contents of the module file, thus enabling the user to check
-  what how the enviroment is changed when a module is loaded.
+  This includes the contents of the module file, enabling the user to see how
+  the enviroment changes when a module is loaded.
