@@ -107,8 +107,9 @@ class BashEval:
                 indent = ''
 
             # Do the wrapping
-            lines.append(
-                    textwrap.fill(line, width=width, subsequent_indent=indent))
+            lines.append(textwrap.fill(line, width=width,
+                                       subsequent_indent=indent,
+                                       drop_whitespace=False))
 
         # Join the lines and add final newline if it was originally present
         return '\n'.join(lines) + ('\n' if final_newline else '')
