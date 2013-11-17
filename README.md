@@ -114,3 +114,10 @@ built-in documentation take it from there.
 *Note:* If you want to know how you can further tweak your installation of Modm
 (either as the admin or a normal user), run `modm config` and check the
 environment variables listed there.
+
+
+Acknowledgements
+----------------
+
+This project was heavily influenced by the `modules` package developed
+by John L. Furlani and Peter W. Osel (see [http://modules.sourceforge.net](http://modules.sourceforge.net)). In fact, the initial intent was to create a simple replacement for `modules` that provides the same key commands but without the hassle of installing Tcl. Many commands have the same name in Modm and `modules` and the overall user interface was inspired by the ease of use that comes with the original tool.
