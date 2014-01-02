@@ -246,9 +246,7 @@ class Modm:
                                 self.modules[index].loaded = modfile
 
             # Delete modules without versions (i.e. without module files)
-            for i in range(len(self.modules)):
-                if len(self.modules[i].versions) == 0:
-                    del self.modules[i]
+            self.modules = [m for m in self.modules if len(m.versions) > 0]
 
             # Sort modules
             self.modules = natsorted(self.modules, key=lambda m: m.name)
