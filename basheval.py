@@ -136,7 +136,7 @@ class BashEval:
 
         # Add printf command to command queue
         self.execute('printf "{m}{n}"'.format(m=self.highlight(
-                self.quote(self.wrap(message, width=width, dedent=dedent)),
+                self.quote(self.wrap(str(message), width=width, dedent=dedent)),
                 kind=kind), n=nl))
 
     def error(self, message, newline=True, internal=False):
