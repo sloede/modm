@@ -217,7 +217,7 @@ class Modm:
                             if self.modules[index].default is None:
                                 defaultversion = ''
                                 with open(modfile, 'r') as f:
-                                    defaultversion = f.read().strip()
+                                    defaultversion = f.readline().strip()
                                 defaultversionfile = os.path.join(modpath,
                                         defaultversion)
                                 if os.path.isfile(defaultversionfile):
@@ -233,8 +233,9 @@ class Modm:
                             # Set category
                             if self.modules[index].category is None:
                                 with open(modfile, 'r') as f:
+                                    category = f.readline().strip()
                                     self.modules[index].category = (
-                                    f.read().strip())
+                                            category if category else None)
                         else:
                             # Add version file
                             if modversion not in [
@@ -376,7 +377,7 @@ class Modm:
 
     def print_modules(self, modules):
         """All modules in list `modules`, sorted by category."""
-        # Determine all categories and the maximum length of the modules
+        # Determine all categories and the maximum string length of the modules
         maxlength = 0
         categories = set()
         for module in modules:
