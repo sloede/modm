@@ -50,3 +50,6 @@ export -f modm
 export MODM_PY
 export MODM_MODULES_PATH
 export MODM_ADMIN_EMAIL
+
+# Enable bash autocomplete
+. $(dirname $MODM_PY)/autocomplete/bash
