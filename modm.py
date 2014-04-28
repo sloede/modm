@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # Modm - Modules iMproved
-# Copyright (C) 2013  Michael Schlottke
+# Copyright (C) 2013-2014  Michael Schlottke
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
