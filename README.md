@@ -26,6 +26,7 @@ Features
 *   Nicely formatted and *colorized* output
 *   Modules organized by categories
 *   Built-in documentation for modules
+*   Bash autocomplete for subcommands
 
 Planned (in a land far, far away):
 
