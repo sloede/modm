@@ -189,9 +189,10 @@ class Modm:
 
             # Iterate over directories containing the modules
             for modules_directory in self.env.modpath:
-                # Iterate over module folders
+                # Iterate over module folders but skip hidden folders
                 for name in [d for d in os.listdir(modules_directory) if
-                        os.path.isdir(os.path.join(modules_directory, d))]:
+                        os.path.isdir(os.path.join(modules_directory, d)) and
+                        not d.startswith('.')]:
                     # Get module index (if existing)
                     index = self.find_module(name)
 
