@@ -40,5 +40,9 @@ _modm()
   return 0
 }
 
+if [[ -n ${ZSH_VERSION-} ]]; then
+  autoload -U +X bashcompinit && bashcompinit
+fi
+
 # Register function for modm
 complete -F _modm modm
